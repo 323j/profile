@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الملف الشخصي - الإصدار 4.4</title>
+<title>الملف الشخصي - الإصدار 10.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 <style>
 :root {
     --bg-color: #1a1a1a;
@@ -17,6 +18,11 @@
     --edit-color: #2ecc71;
     --welcome-color: #9b59b6;
     --secret-color: #f39c12;
+    --islamic-color: #2b825b;
+    --audio-color: #9b59b6;
+    --ai-color: #3498db;
+    --prayer-color: #e74c3c;
+    --privacy-color: #e67e22;
 }
 
 body {
@@ -41,7 +47,7 @@ body {
 }
 
 .container {
-    max-width: 500px;
+    max-width: 600px;
     margin: 0 auto;
     text-align: right;
     position: relative;
@@ -196,7 +202,7 @@ body {
 #edit-toggle {
     background-color: var(--edit-color);
     margin-top: 20px;
-    display: none; /* مخفي افتراضيًا */
+    display: none;
 }
 
 #edit-toggle:hover {
@@ -245,6 +251,11 @@ body {
     --edit-color: #27ae60;
     --welcome-color: #8e44ad;
     --secret-color: #e67e22;
+    --islamic-color: #239b56;
+    --audio-color: #8e44ad;
+    --ai-color: #2980b9;
+    --prayer-color: #c0392b;
+    --privacy-color: #d35400;
 }
 
 .dark-theme {
@@ -257,6 +268,11 @@ body {
     --edit-color: #2ecc71;
     --welcome-color: #9b59b6;
     --secret-color: #f39c12;
+    --islamic-color: #2b825b;
+    --audio-color: #9b59b6;
+    --ai-color: #3498db;
+    --prayer-color: #e74c3c;
+    --privacy-color: #e67e22;
 }
 
 .edit-mode .editable {
@@ -395,6 +411,537 @@ body {
     opacity: 1;
 }
 
+/* أنماط جديدة للإصدار 10.1 */
+.audio-player {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: var(--card-bg);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    width: 300px;
+    transition: all 0.3s ease;
+}
+
+.audio-player.collapsed {
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+}
+
+.audio-player.collapsed .player-controls,
+.audio-player.collapsed .playlist {
+    display: none;
+}
+
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.player-title {
+    color: var(--audio-color);
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.toggle-player {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.player-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.control-button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-button:hover {
+    color: var(--audio-color);
+    transform: scale(1.1);
+}
+
+.playlist {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.playlist-item {
+    padding: 8px;
+    border-radius: 5px;
+    margin: 5px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.playlist-item:hover {
+    background-color: var(--hover-color);
+}
+
+.playlist-item.active {
+    background-color: var(--audio-color);
+    color: white;
+}
+
+.progress-container-audio {
+    width: 100%;
+    height: 5px;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 5px;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.progress-bar-audio {
+    height: 100%;
+    border-radius: 5px;
+    background-color: var(--audio-color);
+    width: 0%;
+}
+
+.time-display {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.7);
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.volume-slider {
+    flex-grow: 1;
+    cursor: pointer;
+}
+
+.ai-assistant {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: var(--ai-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.ai-assistant i {
+    font-size: 1.8rem;
+    color: white;
+}
+
+.ai-chat {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 350px;
+    max-height: 500px;
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ai-chat.open {
+    display: flex;
+}
+
+.chat-header {
+    background-color: var(--ai-color);
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-title {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.close-chat {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.user-message {
+    align-self: flex-end;
+    background-color: var(--primary-color);
+    color: white;
+    border-bottom-right-radius: 5px;
+}
+
+.ai-message {
+    align-self: flex-start;
+    background-color: var(--hover-color);
+    border-bottom-left-radius: 5px;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background-color: var(--hover-color);
+}
+
+.chat-input input {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.send-button {
+    background-color: var(--ai-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.prayer-times {
+    background-color: var(--prayer-color);
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.prayer-times h3 {
+    margin-top: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 8px;
+}
+
+.prayer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.prayer-item {
+    background-color: rgba(0,0,0,0.2);
+    padding: 8px;
+    border-radius: 5px;
+}
+
+.prayer-name {
+    font-weight: bold;
+}
+
+.prayer-time {
+    font-size: 0.9rem;
+}
+
+.quran-ayah {
+    background-color: var(--islamic-color);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+    text-align: center;
+    font-family: 'Traditional Arabic', Arial, sans-serif;
+    font-size: 1.2rem;
+    line-height: 1.8;
+}
+
+.quran-ayah .surah-name {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-top: 10px;
+}
+
+.swiper {
+    width: 100%;
+    height: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.swiper-slide {
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+
+.swiper-button-next, .swiper-button-prev {
+    color: white !important;
+}
+
+.swiper-pagination-bullet {
+    background: white !important;
+}
+
+.hover-sound {
+    transition: all 0.2s ease;
+}
+
+.hover-sound:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.click-sound:active {
+    transform: scale(0.95);
+}
+
+.notification-bell {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: var(--secondary-color);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.notification-bell i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.notification-panel {
+    position: fixed;
+    top: 80px;
+    left: 20px;
+    width: 300px;
+    max-height: 400px;
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    padding: 15px;
+    display: none;
+    overflow-y: auto;
+}
+
+.notification-panel.open {
+    display: block;
+}
+
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 10px;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.notification-time {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    margin-top: 5px;
+}
+
+.achievements {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.achievement-badge {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.achievement-badge i {
+    font-size: 0.9rem;
+}
+
+.dark-mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.dark-mode-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.dark-mode-btn:hover {
+    transform: rotate(30deg);
+}
+
+.privacy-info {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    z-index: 2000;
+    max-width: 90%;
+    width: 400px;
+    display: none;
+    border: 2px solid var(--privacy-color);
+}
+
+.privacy-info.open {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.privacy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--privacy-color);
+    padding-bottom: 10px;
+}
+
+.privacy-title {
+    color: var(--privacy-color);
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.close-privacy {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.privacy-content {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.privacy-item {
+    margin-bottom: 15px;
+}
+
+.privacy-label {
+    font-weight: bold;
+    color: var(--privacy-color);
+    margin-bottom: 5px;
+    display: block;
+}
+
+.privacy-value {
+    background-color: rgba(0,0,0,0.2);
+    padding: 8px;
+    border-radius: 5px;
+    word-break: break-all;
+}
+
+.privacy-warning {
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.edit-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: none;
+}
+
+.edit-overlay.active {
+    display: block;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -406,18 +953,53 @@ body {
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); }
 }
 
-@media (max-width: 600px) {
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
     .header {
         flex-direction: column;
         text-align: center;
     }
     
-    .container {
-        padding: 10px;
+    .social-links {
+        grid-template-columns: 1fr 1fr;
     }
     
+    .audio-player {
+        width: calc(100% - 40px);
+        left: 20px;
+        right: 20px;
+    }
+    
+    .ai-chat {
+        width: calc(100% - 40px);
+        right: 20px;
+    }
+    
+    .notification-panel {
+        width: calc(100% - 40px);
+        left: 20px;
+    }
+    
+    .privacy-info {
+        width: calc(100% - 40px);
+    }
+}
+
+@media (max-width: 480px) {
     .social-links {
         grid-template-columns: 1fr;
+    }
+    
+    .prayer-grid {
+        grid-template-columns: 1fr 1fr;
     }
     
     .edit-panel {
@@ -428,6 +1010,96 @@ body {
 </head>
 <body>
 <canvas id="canvas"></canvas>
+
+<!-- طبقة التعتيم لوضع التعديل -->
+<div class="edit-overlay" id="edit-overlay"></div>
+
+<!-- نافذة معلومات الخصوصية -->
+<div class="privacy-info" id="privacy-info">
+    <div class="privacy-header">
+        <h3 class="privacy-title"><i class="fas fa-user-shield"></i> معلومات الخصوصية</h3>
+        <button class="close-privacy" id="close-privacy">&times;</button>
+    </div>
+    <div class="privacy-content" id="privacy-content">
+        <div class="privacy-item">
+            <span class="privacy-label"><i class="fas fa-network-wired"></i> عنوان IP</span>
+            <div class="privacy-value" id="privacy-ip">جاري التحميل...</div>
+        </div>
+        <div class="privacy-item">
+            <span class="privacy-label"><i class="fas fa-globe"></i> الموقع الجغرافي</span>
+            <div class="privacy-value" id="privacy-location">جاري التحميل...</div>
+        </div>
+        <div class="privacy-item">
+            <span class="privacy-label"><i class="fas fa-desktop"></i> معلومات الجهاز</span>
+            <div class="privacy-value" id="privacy-device">جاري التحميل...</div>
+        </div>
+        <div class="privacy-item">
+            <span class="privacy-label"><i class="fas fa-window-maximize"></i> المتصفح</span>
+            <div class="privacy-value" id="privacy-browser">جاري التحميل...</div>
+        </div>
+        <div class="privacy-item">
+            <span class="privacy-label"><i class="fas fa-mobile-alt"></i> نظام التشغيل</span>
+            <div class="privacy-value" id="privacy-os">جاري التحميل...</div>
+        </div>
+        <div class="privacy-item">
+            <span class="privacy-label"><i class="fas fa-expand"></i> دقة الشاشة</span>
+            <div class="privacy-value" id="privacy-resolution">جاري التحميل...</div>
+        </div>
+        <div class="privacy-warning">
+            <i class="fas fa-exclamation-triangle"></i> هذه المعلومات تستخدم لأغراض تقنية فقط ولا يتم تخزينها
+        </div>
+    </div>
+</div>
+
+<!-- إشعارات -->
+<div class="notification-bell" id="notification-bell">
+    <i class="fas fa-bell"></i>
+    <span class="notification-count" id="notification-count" style="display:none;"></span>
+</div>
+
+<div class="notification-panel" id="notification-panel">
+    <h3 style="margin-top:0;color:var(--secondary-color);border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:10px;">
+        <i class="fas fa-bell"></i> الإشعارات
+    </h3>
+    <div id="notifications-container">
+        <div class="notification-item">
+            <div>مرحباً بك في الملف الشخصي الجديد!</div>
+            <div class="notification-time">الآن</div>
+        </div>
+    </div>
+</div>
+
+<!-- تبديل الوضع الليلي -->
+<div class="dark-mode-toggle">
+    <button class="dark-mode-btn" id="dark-mode-btn">
+        <i class="fas fa-moon"></i>
+    </button>
+</div>
+
+<!-- المساعد الذكي -->
+<div class="ai-assistant" id="ai-assistant">
+    <i class="fas fa-robot"></i>
+</div>
+
+<div class="ai-chat" id="ai-chat">
+    <div class="chat-header">
+        <h3 class="chat-title"><i class="fas fa-robot"></i> المساعد الذكي</h3>
+        <button class="close-chat" id="close-chat"><i class="fas fa-times"></i></button>
+    </div>
+    
+    <div class="chat-messages" id="chat-messages">
+        <div class="message ai-message">
+            السلام عليكم ورحمة الله وبركاته، كيف يمكنني مساعدتك اليوم؟
+        </div>
+    </div>
+    
+    <div class="chat-input">
+        <input type="text" id="user-input" placeholder="اكتب رسالتك هنا...">
+        <button class="send-button" id="send-button"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<!-- المحتوى الرئيسي -->
 <div class="container">
     <!-- شريط الترحيب -->
     <div class="welcome-banner" id="welcome-banner">
@@ -441,7 +1113,7 @@ body {
 
     <div class="header">
         <div class="profile-image-container" style="position:relative">
-            <img src="6610925486.png" alt="صورة الملف الشخصي" class="profile-image" id="profile-image">
+            <img src="6610925486.png" alt="صورة الملف الشخصي" class="profile-image hover-sound" id="profile-image">
             <div class="secret-hint">(النقر 3 مرات لتفعيل وضع التعديل)</div>
         </div>
         <div>
@@ -496,26 +1168,36 @@ body {
         <div class="list-item">تطوير التطبيقات - 80%</div>
     </div>
     
+    <div class="card achievements">
+        <h2><i class="fas fa-trophy"></i> الإنجازات</h2>
+        <div class="achievements">
+            <span class="achievement-badge"><i class="fas fa-medal"></i> أفضل مشروع تقني</span>
+            <span class="achievement-badge"><i class="fas fa-award"></i> مطور الشهر</span>
+            <span class="achievement-badge"><i class="fas fa-star"></i> 5 نجوم في التقييم</span>
+            <span class="achievement-badge"><i class="fas fa-code"></i> 100 مشروع مكتمل</span>
+        </div>
+    </div>
+    
     <div class="social-links">
-        <a href="https://www.tiktok.com/@_5udw" class="social-button" id="tiktok-link">
+        <a href="https://www.tiktok.com/@_5udw" class="social-button hover-sound click-sound" id="tiktok-link">
             <i class="fab fa-tiktok"></i> تيك توك
         </a>
-        <a href="https://t.me/A_A_T_T" class="social-button" id="telegram-link">
+        <a href="https://t.me/A_A_T_T" class="social-button hover-sound click-sound" id="telegram-link">
             <i class="fab fa-telegram"></i> تلغرام
         </a>
-        <a href="https://t.me/A_A_T_T1" class="social-button" id="telegram-channel">
+        <a href="https://t.me/A_A_T_T1" class="social-button hover-sound click-sound" id="telegram-channel">
             <i class="fab fa-telegram-plane"></i> قناة تلغرام
         </a>
-        <a href="mailto:example@example.com" class="social-button" id="email-link">
+        <a href="mailto:example@example.com" class="social-button hover-sound click-sound" id="email-link">
             <i class="fas fa-envelope"></i> البريد
         </a>
     </div>
     
-    <button id="theme-toggle">
+    <button id="theme-toggle" class="hover-sound click-sound">
         <i class="fas fa-moon"></i> تغيير السمة
     </button>
     
-    <button id="edit-toggle">
+    <button id="edit-toggle" class="hover-sound click-sound">
         <i class="fas fa-edit"></i> وضع التعديل
     </button>
 </div>
@@ -555,22 +1237,129 @@ body {
     </div>
     
     <div class="edit-form-actions">
-        <button class="save-btn" id="save-changes"><i class="fas fa-save"></i> حفظ</button>
-        <button class="cancel-btn" id="cancel-edit"><i class="fas fa-times"></i> إلغاء</button>
+        <button class="save-btn hover-sound click-sound" id="save-changes"><i class="fas fa-save"></i> حفظ</button>
+        <button class="cancel-btn hover-sound click-sound" id="cancel-edit"><i class="fas fa-times"></i> إلغاء</button>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 <script>
+// ========== تهيئة Swiper للمعرض ==========
+const swiper = new Swiper('.swiper', {
+    loop: true,
+    autoplay: {
+        delay: 3000,
+        disableOnInteraction: false,
+    },
+    pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+    },
+    navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+    },
+});
+
+// ========== المساعد الذكي ==========
+const aiAssistant = document.getElementById('ai-assistant');
+const aiChat = document.getElementById('ai-chat');
+const closeChat = document.getElementById('close-chat');
+const chatMessages = document.getElementById('chat-messages');
+const userInput = document.getElementById('user-input');
+const sendButton = document.getElementById('send-button');
+
+// فتح/إغلاق الدردشة
+aiAssistant.addEventListener('click', () => {
+    aiChat.classList.toggle('open');
+});
+
+closeChat.addEventListener('click', () => {
+    aiChat.classList.remove('open');
+});
+
+// إرسال رسالة
+function sendMessage() {
+    const message = userInput.value.trim();
+    if (message === '') return;
+    
+    // إضافة رسالة المستخدم
+    addMessage(message, 'user');
+    userInput.value = '';
+    
+    // معالجة الرسالة وإضافة رد
+    setTimeout(() => {
+        const response = getAIResponse(message);
+        addMessage(response, 'ai');
+        
+        // التمرير إلى الأسفل
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 500);
+}
+
+// إضافة رسالة إلى الدردشة
+function addMessage(text, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message');
+    messageDiv.classList.add(sender === 'user' ? 'user-message' : 'ai-message');
+    messageDiv.textContent = text;
+    
+    // تأثير ظهور الرسالة
+    messageDiv.style.opacity = '0';
+    messageDiv.style.transform = 'translateY(10px)';
+    messageDiv.style.transition = 'all 0.3s ease';
+    
+    chatMessages.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.style.opacity = '1';
+        messageDiv.style.transform = 'translateY(0)';
+    }, 10);
+    
+    // التمرير إلى الأسفل
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// توليد ردود المساعد
+function getAIResponse(message) {
+    const lowerMessage = message.toLowerCase();
+    
+    if (lowerMessage.includes('مرحبا') || lowerMessage.includes('السلام')) {
+        return 'وعليكم السلام ورحمة الله وبركاته! كيف يمكنني مساعدتك اليوم؟';
+    } else if (lowerMessage.includes('اسمك') || lowerMessage.includes('من أنت')) {
+        return 'أنا المساعد الذكي لملف أحمد الشخصي. يمكنني الإجابة على أسئلتك حول مهاراته وخبراته.';
+    } else if (lowerMessage.includes('مهارات') || lowerMessage.includes('خبرات')) {
+        return 'أحمد لديه خبرة في: Python, JavaScript, React, Node.js, HTML/CSS, SQL, Git. كما لديه خبرة في تطوير الويب بنسبة 90%، وبرمجة بايثون بنسبة 85%، وتطوير التطبيقات بنسبة 80%.';
+    } else if (lowerMessage.includes('اتصال') || lowerMessage.includes('تواصل')) {
+        return 'يمكنك التواصل مع أحمد عبر: تيك توك، تلغرام، قناة تلغرام، أو البريد الإلكتروني. الروابط متاحة في صفحته.';
+    } else if (lowerMessage.includes('شكرا') || lowerMessage.includes('متشكر')) {
+        return 'العفو! لا تتردد في سؤالي عن أي شيء آخر.';
+    } else if (lowerMessage.includes('إعدادات') || lowerMessage.includes('settings') || lowerMessage.includes('خصوصية') || lowerMessage.includes('privacy')) {
+        showPrivacyInfo();
+        return 'لقد قمت بفتح نافذة معلومات الخصوصية. يمكنك رؤية معلومات جهازك واتصالك هناك.';
+    } else {
+        return 'آسف، لم أفهم سؤالك. يمكنك أن تسأل عن مهارات أحمد، خبراته، كيفية التواصل معه، أو كتابة "إعدادات" لرؤية معلومات الخصوصية.';
+    }
+}
+
+// أحداث إرسال الرسالة
+sendButton.addEventListener('click', sendMessage);
+userInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
 // ========== نظام التعديل السري ==========
 let clickCount = 0;
 let lastClickTime = 0;
 const PROFILE_IMAGE = document.getElementById('profile-image');
 const EDIT_TOGGLE = document.getElementById('edit-toggle');
+const EDIT_OVERLAY = document.getElementById('edit-overlay');
 
 PROFILE_IMAGE.addEventListener('click', (e) => {
     const currentTime = new Date().getTime();
     
-    // إذا كانت الفترة بين النقرات أقل من 500 مللي ثانية
     if (currentTime - lastClickTime < 500) {
         clickCount++;
     } else {
@@ -579,7 +1368,6 @@ PROFILE_IMAGE.addEventListener('click', (e) => {
     
     lastClickTime = currentTime;
     
-    // إذا تم النقر 3 مرات
     if (clickCount >= 3) {
         activateEditMode();
         clickCount = 0;
@@ -587,16 +1375,10 @@ PROFILE_IMAGE.addEventListener('click', (e) => {
 });
 
 function activateEditMode() {
-    // إضافة تأثيرات بصرية
     PROFILE_IMAGE.classList.add('secret-mode');
-    
-    // إظهار زر التعديل
     EDIT_TOGGLE.style.display = 'flex';
-    
-    // إشعار للمستخدم
     showNotification('تم تفعيل وضع التعديل السري!', 'var(--secret-color)');
     
-    // إزالة التأثير بعد 3 ثواني
     setTimeout(() => {
         PROFILE_IMAGE.classList.remove('secret-mode');
     }, 3000);
@@ -616,7 +1398,6 @@ function getVisitorInfo() {
     
     document.getElementById('visit-time').textContent = visitTime;
     
-    // معلومات المتصفح
     const userAgent = navigator.userAgent;
     let browser = "متصفح غير معروف";
     if (userAgent.includes("Firefox")) browser = "Firefox";
@@ -626,7 +1407,6 @@ function getVisitorInfo() {
     
     document.getElementById('browser-info').textContent = browser;
     
-    // معلومات نظام التشغيل
     let os = "نظام غير معروف";
     if (userAgent.includes("Windows")) os = "Windows";
     else if (userAgent.includes("Mac")) os = "Mac";
@@ -636,13 +1416,75 @@ function getVisitorInfo() {
     
     document.getElementById('os-info').textContent = os;
     
-    // إخفاء شريط الترحيب بعد 10 ثواني
     setTimeout(() => {
         document.getElementById('welcome-banner').style.opacity = '0';
         setTimeout(() => {
             document.getElementById('welcome-banner').style.display = 'none';
         }, 500);
     }, 10000);
+}
+
+// ========== معلومات الخصوصية ==========
+const privacyInfo = document.getElementById('privacy-info');
+const closePrivacy = document.getElementById('close-privacy');
+
+function showPrivacyInfo() {
+    privacyInfo.classList.add('open');
+    
+    // جلب معلومات IP والموقع
+    fetch('https://ipapi.co/json/')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('privacy-ip').textContent = data.ip || 'غير معروف';
+            const location = `${data.city || 'غير معروف'}, ${data.country_name || 'غير معروف'}`;
+            document.getElementById('privacy-location').textContent = location;
+        })
+        .catch(() => {
+            document.getElementById('privacy-ip').textContent = 'غير متاح';
+            document.getElementById('privacy-location').textContent = 'غير متاح';
+        });
+    
+    // معلومات الجهاز والمتصفح
+    const userAgent = navigator.userAgent;
+    document.getElementById('privacy-browser').textContent = detectBrowser();
+    document.getElementById('privacy-os').textContent = detectOS();
+    document.getElementById('privacy-resolution').textContent = `${window.screen.width}x${window.screen.height}`;
+    
+    // معلومات الجهاز
+    let deviceInfo = 'كمبيوتر';
+    if (/Mobi|Android|iPhone|iPad|iPod/i.test(userAgent)) {
+        deviceInfo = 'هاتف محمول';
+        if (/Tablet|iPad/i.test(userAgent)) {
+            deviceInfo = 'جهاز لوحي';
+        }
+    }
+    document.getElementById('privacy-device').textContent = deviceInfo;
+}
+
+closePrivacy.addEventListener('click', () => {
+    privacyInfo.classList.remove('open');
+});
+
+// كشف المتصفح
+function detectBrowser() {
+    const userAgent = navigator.userAgent;
+    if (userAgent.includes("Firefox")) return "Mozilla Firefox";
+    if (userAgent.includes("Chrome")) return "Google Chrome";
+    if (userAgent.includes("Safari")) return "Apple Safari";
+    if (userAgent.includes("Edge")) return "Microsoft Edge";
+    if (userAgent.includes("Opera") || userAgent.includes("OPR")) return "Opera";
+    return "متصفح غير معروف";
+}
+
+// كشف نظام التشغيل
+function detectOS() {
+    const userAgent = navigator.userAgent;
+    if (userAgent.includes("Windows")) return "Windows";
+    if (userAgent.includes("Mac")) return "macOS";
+    if (userAgent.includes("Linux")) return "Linux";
+    if (userAgent.includes("Android")) return "Android";
+    if (userAgent.includes("iOS")) return "iOS";
+    return "نظام غير معروف";
 }
 
 // ========== الخلفية المتحركة ==========
@@ -752,19 +1594,23 @@ editToggle.addEventListener('click', () => {
         document.body.classList.add('edit-mode');
         editToggle.innerHTML = '<i class="fas fa-times"></i> إغلاق وضع التعديل';
         editPanel.classList.add('open');
+        EDIT_OVERLAY.classList.add('active');
     } else {
-        document.body.classList.remove('edit-mode');
-        editToggle.innerHTML = '<i class="fas fa-edit"></i> وضع التعديل';
-        editPanel.classList.remove('open');
+        closeEditPanel();
     }
 });
 
-closePanel.addEventListener('click', () => {
+// إغلاق لوحة التعديل عند النقر خارجها
+EDIT_OVERLAY.addEventListener('click', closeEditPanel);
+closePanel.addEventListener('click', closeEditPanel);
+
+function closeEditPanel() {
     isEditMode = false;
     document.body.classList.remove('edit-mode');
     editToggle.innerHTML = '<i class="fas fa-edit"></i> وضع التعديل';
     editPanel.classList.remove('open');
-});
+    EDIT_OVERLAY.classList.remove('active');
+}
 
 // حفظ التغييرات
 const saveChanges = document.getElementById('save-changes');
@@ -785,21 +1631,12 @@ saveChanges.addEventListener('click', () => {
     document.getElementById('profile-image').src = newImage;
     
     showNotification('تم حفظ التغييرات بنجاح');
-    
-    isEditMode = false;
-    document.body.classList.remove('edit-mode');
-    editToggle.innerHTML = '<i class="fas fa-edit"></i> وضع التعديل';
-    editPanel.classList.remove('open');
+    closeEditPanel();
 });
 
 // إلغاء التعديل
 const cancelEdit = document.getElementById('cancel-edit');
-cancelEdit.addEventListener('click', () => {
-    isEditMode = false;
-    document.body.classList.remove('edit-mode');
-    editToggle.innerHTML = '<i class="fas fa-edit"></i> وضع التعديل';
-    editPanel.classList.remove('open');
-});
+cancelEdit.addEventListener('click', closeEditPanel);
 
 // حقول قابلة للتعديل
 document.querySelectorAll('.editable').forEach(item => {
@@ -842,7 +1679,88 @@ document.querySelectorAll('.editable').forEach(item => {
     });
 });
 
-// إشعارات
+// ========== نظام الإشعارات ==========
+const notificationBell = document.getElementById('notification-bell');
+const notificationPanel = document.getElementById('notification-panel');
+const notificationCount = document.getElementById('notification-count');
+const notificationsContainer = document.getElementById('notifications-container');
+
+notificationBell.addEventListener('click', () => {
+    notificationPanel.classList.toggle('open');
+    notificationCount.style.display = 'none';
+});
+
+// إضافة إشعار جديد
+function addNotification(text, bgColor = 'var(--edit-color)') {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
+    
+    const notificationItem = document.createElement('div');
+    notificationItem.className = 'notification-item';
+    notificationItem.innerHTML = `
+        <div>${text}</div>
+        <div class="notification-time">${timeString}</div>
+    `;
+    
+    notificationsContainer.insertBefore(notificationItem, notificationsContainer.firstChild);
+    
+    // تحديث عدد الإشعارات
+    const count = parseInt(notificationCount.textContent) || 0;
+    notificationCount.textContent = count + 1;
+    notificationCount.style.display = 'inline-block';
+    
+    // تأثير ظهور الإشعار
+    notificationItem.style.animation = 'slideIn 0.3s ease';
+}
+
+// ========== تبديل السمة ==========
+const themeToggle = document.getElementById('theme-toggle');
+const darkModeBtn = document.getElementById('dark-mode-btn');
+
+function toggleTheme() {
+    isLightTheme = !isLightTheme;
+    if (isLightTheme) {
+        document.body.classList.add('light-theme');
+        document.body.classList.remove('dark-theme');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i> تفعيل الوضع الليلي';
+        darkModeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+    } else {
+        document.body.classList.remove('light-theme');
+        document.body.classList.add('dark-theme');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i> تفعيل الوضع النهاري';
+        darkModeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+    
+    particles.forEach(p => p.color = p.getRandomColor());
+    
+    // حفظ التفضيل
+    localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
+}
+
+themeToggle.addEventListener('click', toggleTheme);
+darkModeBtn.addEventListener('click', toggleTheme);
+
+// ========== تأثيرات الصوت ==========
+const hoverSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-hover-click-notification-358.mp3');
+const clickSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3');
+
+document.querySelectorAll('.hover-sound').forEach(element => {
+    element.addEventListener('mouseenter', () => {
+        hoverSound.currentTime = 0;
+        hoverSound.volume = 0.3;
+        hoverSound.play();
+    });
+});
+
+document.querySelectorAll('.click-sound').forEach(element => {
+    element.addEventListener('click', () => {
+        clickSound.currentTime = 0;
+        clickSound.volume = 0.5;
+        clickSound.play();
+    });
+});
+
+// ========== إشعارات ==========
 function showNotification(message, bgColor = 'var(--edit-color)') {
     const notification = document.createElement('div');
     notification.className = 'card';
@@ -866,7 +1784,7 @@ function showNotification(message, bgColor = 'var(--edit-color)') {
     }, 3000);
 }
 
-// شريط التقدم
+// ========== شريط التقدم ==========
 const progressBars = document.querySelectorAll('.progress-bar');
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -882,27 +1800,19 @@ const observer = new IntersectionObserver((entries) => {
 
 progressBars.forEach(bar => observer.observe(bar));
 
-// تبديل السمة
-const themeToggle = document.getElementById('theme-toggle');
-themeToggle.addEventListener('click', () => {
-    isLightTheme = !isLightTheme;
-    if (isLightTheme) {
-        document.body.classList.add('light-theme');
-        document.body.classList.remove('dark-theme');
-        themeToggle.innerHTML = '<i class="fas fa-moon"></i> تفعيل الوضع الليلي';
-    } else {
-        document.body.classList.remove('light-theme');
-        document.body.classList.add('dark-theme');
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i> تفعيل الوضع النهاري';
-    }
-    
-    particles.forEach(p => p.color = p.getRandomColor());
-});
-
-// تهيئة الصفحة
+// ========== تهيئة الصفحة ==========
 window.onload = function() {
     getVisitorInfo();
     animateBackground();
+    
+    // تحميل السمة المحفوظة
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        isLightTheme = true;
+        document.body.classList.add('light-theme');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i> تفعيل الوضع الليلي';
+        darkModeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+    }
     
     // إضافة تذييل الصفحة
     const footer = document.createElement('div');
@@ -910,8 +1820,21 @@ window.onload = function() {
     footer.style.marginTop = '20px';
     footer.style.color = 'var(--text-color)';
     footer.style.opacity = '0.7';
-    footer.innerHTML = `&copy; ${new Date().getFullYear()} - جميع الحقوق محفوظة - الإصدار 4.4`;
+    footer.innerHTML = `&copy; ${new Date().getFullYear()} - جميع الحقوق محفوظة - الإصدار 10.1`;
     document.querySelector('.container').appendChild(footer);
+    
+    // إضافة إشعارات أولية
+    setTimeout(() => {
+        addNotification('تم تحميل الملف الشخصي بنجاح');
+    }, 2000);
+    
+    setTimeout(() => {
+        addNotification('يمكنك تجربة المساعد الذكي في الزاوية السفلية');
+    }, 4000);
+    
+    setTimeout(() => {
+        addNotification('اضغط على الصورة 3 مرات لتفعيل وضع التعديل');
+    }, 6000);
 };
 </script>
 </body>
