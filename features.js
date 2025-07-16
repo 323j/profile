@@ -1,15 +1,23 @@
 /**
- * ملف المميزات الإضافية - الإصدار v2
- * المميزات الجديدة:
- * 1- نظام موسيقى متكامل مع زر تشغيل في الأسفل
- * 2- مساعد ذكي محسن مع ردود ذكية
- * 3- نظام بيانات الزوار المتقدم
- * 4- واجهة تحكم مطورة
- * 5- دعم الإشعارات الذكية
+ * ملف المميزات الإضافية - الإصدار v3
+ * التعديلات الرئيسية:
+ * 1- إصلاح مشاكل التناسق في الواجهة
+ * 2- تحسين نظام المساعد الذكي
+ * 3- مشغل موسيقى مخفي يظهر عند الطلب
+ * 4- أوامر خفية متقدمة
+ * 5- تحسينات في تجربة المستخدم
  */
 
 // ====== تهيئة المتغيرات العامة ======
 const APP = {
+    settings: {
+        musicPlayerVisible: false,
+        hiddenCommands: {
+            'الأسرار': 'showAllSecrets',
+            'المطور': 'showDevInfo',
+            'إعادة تحميل': 'refreshApp'
+        }
+    },
     music: {
         player: null,
         currentSong: 0,
@@ -27,46 +35,50 @@ const APP = {
                 cover: "https://via.placeholder.com/150"
             }
         ]
-    },
-    visitorData: {
-        total: 0,
-        countries: {},
-        devices: {},
-        visits: []
     }
 };
 
 // ====== تنفيذ عند تحميل الصفحة ======
 document.addEventListener('DOMContentLoaded', function() {
-    // التحقق من التوافق
-    if (!isBrowserCompatible()) {
-        showErrorNotification('المتصفح غير مدعوم بالكامل');
-        return;
-    }
-
-    // تهيئة المميزات
-    initVisitorSystem();
+    // إصلاح مشاكل التناسق
+    fixLayoutIssues();
+    
+    // تهيئة الأنظمة
     initMusicSystem();
     enhanceChatAI();
-    addControlPanel();
-
+    
     // إشعار البدء
-    showSuccessNotification('تم تحميل المميزات المتقدمة بنجاح!');
+    showNotification('تم تحميل النظام بنجاح!', 'var(--success-color)');
 });
 
-// ====== دعم المتصفح ======
-function isBrowserCompatible() {
-    return window.Promise && 
-           window.fetch && 
-           window.AudioContext && 
-           'volume' in HTMLAudioElement.prototype;
+// ====== إصلاح مشاكل التناسق ======
+function fixLayoutIssues() {
+    // إصلاح مساحة العناصر
+    document.querySelectorAll('.card').forEach(card => {
+        card.style.margin = '15px 0';
+        card.style.padding = '20px';
+    });
+    
+    // إصلاح رأس الصفحة
+    const header = document.querySelector('.header');
+    if (header) {
+        header.style.flexDirection = 'row';
+        header.style.alignItems = 'center';
+    }
+    
+    // إصلاح تناسق النصوص
+    document.querySelectorAll('body').forEach(el => {
+        el.style.lineHeight = '1.6';
+    });
+    
+    console.log('تم إصلاح مشاكل التناسق');
 }
 
-// ====== نظام الموسيقى المتكامل ======
+// ====== نظام الموسيقى المحسن ======
 function initMusicSystem() {
     try {
-        // إنشاء عناصر واجهة المستخدم
-        createMusicUI();
+        // إنشاء عناصر واجهة المستخدم المخفية
+        createHiddenMusicUI();
         
         // تهيئة مشغل الصوت
         APP.music.player = new Audio();
@@ -75,247 +87,78 @@ function initMusicSystem() {
         // تحميل أول أغنية
         loadSong(0);
         
-        // إعداد الأحداث
-        setupMusicEvents();
-        
-        console.log('نظام الموسيقى جاهز');
+        console.log('نظام الموسيقى جاهز (مخفي)');
     } catch (error) {
         console.error('خطأ في نظام الموسيقى:', error);
-        showErrorNotification('تعذر تحميل مشغل الموسيقى');
+        showNotification('تعذر تحميل مشغل الموسيقى', 'var(--error-color)');
     }
 }
 
-function createMusicUI() {
+function createHiddenMusicUI() {
     const musicUI = `
-    <div class="music-controls-bar" id="music-controls-bar">
-        <div class="music-info">
-            <img src="${APP.music.songs[0].cover}" id="music-cover" class="music-cover">
+    <div class="hidden-music-player" id="music-player" style="display:none;">
+        <div class="music-header">
+            <h3><i class="fas fa-music"></i> مشغل الموسيقى</h3>
+            <button id="close-music"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="music-controls">
+            <button id="prev-song"><i class="fas fa-step-backward"></i></button>
+            <button id="play-pause"><i class="fas fa-play"></i></button>
+            <button id="next-song"><i class="fas fa-step-forward"></i></button>
+        </div>
+        <div class="song-info">
+            <img src="${APP.music.songs[0].cover}" id="music-cover">
             <div>
-                <div id="music-title" class="music-title">${APP.music.songs[0].title}</div>
-                <div class="music-time">
-                    <span id="current-time">00:00</span> / <span id="duration">00:00</span>
+                <div id="music-title">${APP.music.songs[0].title}</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="music-progress"></div>
+                </div>
+                <div class="time-display">
+                    <span id="current-time">00:00</span>
+                    <span id="duration">00:00</span>
                 </div>
             </div>
         </div>
-        <div class="music-buttons">
-            <button id="prev-btn" class="music-btn"><i class="fas fa-step-backward"></i></button>
-            <button id="play-btn" class="music-btn play-btn"><i class="fas fa-play"></i></button>
-            <button id="next-btn" class="music-btn"><i class="fas fa-step-forward"></i></button>
-            <div class="volume-control">
-                <i class="fas fa-volume-down"></i>
-                <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="${APP.music.volume}">
-                <i class="fas fa-volume-up"></i>
-            </div>
+        <div class="volume-control">
+            <i class="fas fa-volume-down"></i>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="${APP.music.volume}">
+            <i class="fas fa-volume-up"></i>
         </div>
-        <button id="music-toggle" class="music-toggle-btn"><i class="fas fa-music"></i></button>
     </div>
+    
+    <button id="show-music-btn" class="floating-btn" style="display:none;">
+        <i class="fas fa-music"></i>
+    </button>
     `;
     
     document.body.insertAdjacentHTML('beforeend', musicUI);
-}
-
-function setupMusicEvents() {
-    // عناصر التحكم
-    const playBtn = document.getElementById('play-btn');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const volumeSlider = document.getElementById('volume-slider');
-    const progressBar = document.getElementById('music-progress');
-    const toggleBtn = document.getElementById('music-toggle');
     
-    // أحداث الأزرار
-    playBtn.addEventListener('click', togglePlay);
-    prevBtn.addEventListener('click', prevSong);
-    nextBtn.addEventListener('click', nextSong);
-    volumeSlider.addEventListener('input', changeVolume);
-    toggleBtn.addEventListener('click', toggleMusicPanel);
-    
-    // أحداث الصوت
-    APP.music.player.addEventListener('timeupdate', updateProgress);
-    APP.music.player.addEventListener('ended', nextSong);
-    APP.music.player.addEventListener('loadedmetadata', updateSongInfo);
+    // أحداث المشغل
+    document.getElementById('play-pause').addEventListener('click', togglePlay);
+    document.getElementById('prev-song').addEventListener('click', prevSong);
+    document.getElementById('next-song').addEventListener('click', nextSong);
+    document.getElementById('volume-slider').addEventListener('input', changeVolume);
+    document.getElementById('close-music').addEventListener('click', hideMusicPlayer);
+    document.getElementById('show-music-btn').addEventListener('click', showMusicPlayer);
 }
 
-function loadSong(index) {
-    APP.music.currentSong = index;
-    const song = APP.music.songs[index];
-    
-    APP.music.player.src = song.src;
-    document.getElementById('music-title').textContent = song.title;
-    document.getElementById('music-cover').src = song.cover;
-    
-    if (APP.music.isPlaying) {
-        APP.music.player.play()
-            .then(() => updatePlayButton())
-            .catch(e => console.error('خطأ التشغيل:', e));
-    }
+function showMusicPlayer() {
+    const player = document.getElementById('music-player');
+    player.style.display = 'block';
+    player.style.position = 'fixed';
+    player.style.bottom = '20px';
+    player.style.right = '20px';
+    player.style.zIndex = '1000';
+    player.style.width = '300px';
+    document.getElementById('show-music-btn').style.display = 'none';
 }
 
-function togglePlay() {
-    if (APP.music.isPlaying) {
-        APP.music.player.pause();
-    } else {
-        APP.music.player.play()
-            .then(() => {
-                APP.music.isPlaying = true;
-                updatePlayButton();
-            })
-            .catch(e => {
-                console.error('خطأ التشغيل:', e);
-                showErrorNotification('تعذر تشغيل الموسيقى');
-            });
-    }
-    APP.music.isPlaying = !APP.music.isPlaying;
-    updatePlayButton();
+function hideMusicPlayer() {
+    document.getElementById('music-player').style.display = 'none';
+    document.getElementById('show-music-btn').style.display = 'block';
 }
 
-function updatePlayButton() {
-    const playBtn = document.getElementById('play-btn');
-    if (APP.music.isPlaying) {
-        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-        playBtn.classList.add('playing');
-    } else {
-        playBtn.innerHTML = '<i class="fas fa-play"></i>';
-        playBtn.classList.remove('playing');
-    }
-}
-
-function prevSong() {
-    let newIndex = APP.music.currentSong - 1;
-    if (newIndex < 0) newIndex = APP.music.songs.length - 1;
-    loadSong(newIndex);
-}
-
-function nextSong() {
-    let newIndex = APP.music.currentSong + 1;
-    if (newIndex >= APP.music.songs.length) newIndex = 0;
-    loadSong(newIndex);
-}
-
-function changeVolume() {
-    APP.music.volume = this.value;
-    APP.music.player.volume = APP.music.volume;
-}
-
-function updateProgress() {
-    const progress = (APP.music.player.currentTime / APP.music.player.duration) * 100;
-    document.getElementById('current-time').textContent = formatTime(APP.music.player.currentTime);
-}
-
-function updateSongInfo() {
-    document.getElementById('duration').textContent = formatTime(APP.music.player.duration);
-}
-
-function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-}
-
-function toggleMusicPanel() {
-    document.getElementById('music-controls-bar').classList.toggle('expanded');
-}
-
-// ====== نظام بيانات الزوار ======
-function initVisitorSystem() {
-    try {
-        // تحميل البيانات المحفوظة
-        const savedData = localStorage.getItem('visitorData');
-        if (savedData) {
-            APP.visitorData = JSON.parse(savedData);
-        }
-        
-        // تسجيل الزيارة الجديدة
-        recordVisit();
-        
-        console.log('نظام الزوار جاهز');
-    } catch (error) {
-        console.error('خطأ في نظام الزوار:', error);
-    }
-}
-
-function recordVisit() {
-    // زيادة العداد
-    APP.visitorData.total++;
-    
-    // جلب معلومات الزائر
-    fetch('https://ipapi.co/json/')
-        .then(response => response.json())
-        .then(data => {
-            // تسجيل الدولة
-            const country = data.country_name || 'غير معروف';
-            APP.visitorData.countries[country] = (APP.visitorData.countries[country] || 0) + 1;
-            
-            // تسجيل الجهاز
-            const device = getDeviceType();
-            APP.visitorData.devices[device] = (APP.visitorData.devices[device] || 0) + 1;
-            
-            // تسجيل وقت الزيارة
-            APP.visitorData.visits.push(new Date().toISOString());
-            
-            // حفظ البيانات
-            localStorage.setItem('visitorData', JSON.stringify(APP.visitorData));
-        })
-        .catch(() => {
-            console.log('تعذر جلب بيانات الموقع');
-        });
-}
-
-function getDeviceType() {
-    const ua = navigator.userAgent;
-    if (/Mobi|Android|iPhone|iPad|iPod/i.test(ua)) {
-        return /Tablet|iPad/i.test(ua) ? 'جهاز لوحي' : 'هاتف ذكي';
-    }
-    return 'كمبيوتر';
-}
-
-function showVisitorData() {
-    const data = APP.visitorData;
-    const visitorDataHTML = `
-    <div class="visitor-data-panel" id="visitor-data-panel">
-        <div class="panel-header">
-            <h3><i class="fas fa-users"></i> إحصائيات الزوار</h3>
-            <button class="close-panel" id="close-visitor-panel"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="panel-content">
-            <div class="data-item">
-                <div class="data-label">إجمالي الزوار:</div>
-                <div class="data-value">${data.total}</div>
-            </div>
-            <div class="data-item">
-                <div class="data-label">آخر زيارة:</div>
-                <div class="data-value">${new Date(data.visits[data.visits.length-1]).toLocaleString('ar-EG')}</div>
-            </div>
-            <div class="data-item">
-                <div class="data-label">أكثر الدول:</div>
-                <div class="data-value">${getTopCountries()}</div>
-            </div>
-            <div class="data-item">
-                <div class="data-label">نوع الأجهزة:</div>
-                <div class="data-value">${getDevicesStats()}</div>
-            </div>
-        </div>
-    </div>
-    `;
-    
-    document.body.insertAdjacentHTML('beforeend', visitorDataHTML);
-    
-    // إغلاق اللوحة
-    document.getElementById('close-visitor-panel').addEventListener('click', () => {
-        document.getElementById('visitor-data-panel').remove();
-    });
-}
-
-function getTopCountries() {
-    const countries = APP.visitorData.countries;
-    const sorted = Object.entries(countries).sort((a, b) => b[1] - a[1]);
-    return sorted.slice(0, 3).map(item => `${item[0]} (${item[1]})`).join('، ');
-}
-
-function getDevicesStats() {
-    const devices = APP.visitorData.devices;
-    return Object.entries(devices).map(item => `${item[0]}: ${item[1]}`).join('، ');
-}
+// ... (بقية دوال نظام الموسيقى من الإصدار السابق)
 
 // ====== المساعد الذكي المحسن ======
 function enhanceChatAI() {
@@ -327,22 +170,17 @@ function enhanceChatAI() {
         window.getAIResponse = function(message) {
             const lowerMsg = message.toLowerCase();
             
-            // الأوامر الخاصة
-            if (/داتا|بيانات|إحصائيات/.test(lowerMsg)) {
-                showVisitorData();
-                return "تم عرض إحصائيات الزوار في اللوحة الخاصة";
+            // الأوامر الخاصة بالموسيقى
+            if (/موسيقى|أغاني|تشغيل|music/.test(lowerMsg)) {
+                toggleMusicCommand();
+                return "تم تفعيل مشغل الموسيقى. يمكنك فتحه من الزر العائم في الأسفل";
             }
             
-            if (/موسيقى|أغاني|تشغيل/.test(lowerMsg)) {
-                return `يمكنك التحكم بالموسيقى من شريط التحكم في الأسفل. الأغاني المتاحة: ${APP.music.songs.map(s => s.title).join('، ')}`;
-            }
-            
-            if (/مساعدة|أوامر|commands/.test(lowerMsg)) {
-                return `أوامر المساعد:
-- "بيانات": عرض إحصائيات الزوار
-- "موسيقى": التحكم بالمشغل الموسيقي
-- "مساعدة": عرض هذه القائمة
-${originalAI('مساعدة') || ''}`;
+            // الأوامر الخفية
+            for (const [cmd, action] of Object.entries(APP.settings.hiddenCommands)) {
+                if (lowerMsg.includes(cmd.toLowerCase())) {
+                    return executeHiddenCommand(action);
+                }
             }
             
             // الرد العادي
@@ -355,179 +193,132 @@ ${originalAI('مساعدة') || ''}`;
     }
 }
 
-// ====== لوحة التحكم الإضافية ======
-function addControlPanel() {
-    const panelHTML = `
-    <div class="control-panel" id="control-panel">
-        <button class="panel-btn" id="visitor-data-btn" title="بيانات الزوار">
-            <i class="fas fa-chart-bar"></i>
-        </button>
-        <button class="panel-btn" id="music-control-btn" title="التحكم بالموسيقى">
-            <i class="fas fa-music"></i>
-        </button>
-    </div>
-    `;
-    
-    document.body.insertAdjacentHTML('beforeend', panelHTML);
-    
-    // أحداث الأزرار
-    document.getElementById('visitor-data-btn').addEventListener('click', showVisitorData);
-    document.getElementById('music-control-btn').addEventListener('click', () => {
-        document.getElementById('music-controls-bar').classList.toggle('expanded');
-    });
+function toggleMusicCommand() {
+    const btn = document.getElementById('show-music-btn');
+    btn.style.display = 'block';
+    btn.style.position = 'fixed';
+    btn.style.bottom = '20px';
+    btn.style.right = '20px';
+    btn.style.zIndex = '1000';
+    APP.settings.musicPlayerVisible = true;
+}
+
+function executeHiddenCommand(action) {
+    switch(action) {
+        case 'showAllSecrets':
+            return `الأوامر الخفية المتاحة:
+- "المطور": معلومات عن المطور
+- "إعادة تحميل": تحديث الصفحة
+- "الموسيقى": تفعيل مشغل الموسيقى`;
+            
+        case 'showDevInfo':
+            return `معلومات المطور:
+الاسم: أحمد
+التخصص: تطوير الويب والتطبيقات
+المهارات: JavaScript, Python, React, Node.js`;
+            
+        case 'refreshApp':
+            setTimeout(() => location.reload(), 2000);
+            return "جاري إعادة تحميل التطبيق...";
+            
+        default:
+            return "أمر غير معروف";
+    }
 }
 
 // ====== نظام الإشعارات ======
-function showSuccessNotification(message) {
-    if (window.addNotification) {
-        addNotification(message, 'var(--success-color)');
-    } else {
-        console.log('إشعار:', message);
-    }
+function showNotification(message, color = 'var(--primary-color)') {
+    const notification = document.createElement('div');
+    notification.className = 'custom-notification';
+    notification.textContent = message;
+    notification.style.backgroundColor = color;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 500);
+    }, 3000);
 }
 
-function showErrorNotification(message) {
-    if (window.addNotification) {
-        addNotification(message, 'var(--error-color)');
-    } else {
-        console.error('خطأ:', message);
-    }
-}
-
-// ====== أنماط CSS المدمجة ======
+// ====== حقن الأنماط المطلوبة ======
 function injectStyles() {
     const styles = `
-    /* أنماط مشغل الموسيقى */
-    .music-controls-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
+    /* أنماط مشغل الموسيقى المخفي */
+    .hidden-music-player {
         background: var(--card-bg);
-        padding: 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid var(--hover-color);
-        z-index: 1000;
-        transition: all 0.3s ease;
-    }
-    
-    .music-info {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .music-cover {
-        width: 40px;
-        height: 40px;
-        border-radius: 5px;
-    }
-    
-    .music-title {
-        font-weight: bold;
-        font-size: 0.9rem;
-    }
-    
-    .music-time {
-        font-size: 0.8rem;
-        opacity: 0.7;
-    }
-    
-    .music-buttons {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-    
-    .music-btn {
-        background: none;
-        border: none;
-        color: var(--text-color);
-        font-size: 1.2rem;
-        cursor: pointer;
-    }
-    
-    .play-btn.playing {
-        color: var(--primary-color);
-    }
-    
-    .volume-control {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-    
-    .music-toggle-btn {
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-    
-    /* أنماط لوحة بيانات الزوار */
-    .visitor-data-panel {
-        position: fixed;
-        bottom: 60px;
-        right: 20px;
-        width: 300px;
-        background: var(--card-bg);
+        padding: 15px;
         border-radius: 10px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        z-index: 1001;
-        padding: 15px;
     }
     
-    .panel-header {
+    .music-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 15px;
     }
     
-    .panel-content {
+    .music-controls {
         display: flex;
-        flex-direction: column;
-        gap: 10px;
+        justify-content: center;
+        gap: 20px;
+        margin: 15px 0;
     }
     
-    .data-item {
-        display: flex;
-        justify-content: space-between;
-    }
-    
-    .data-label {
-        font-weight: bold;
-    }
-    
-    .close-panel {
+    .music-controls button {
         background: none;
         border: none;
         color: var(--text-color);
+        font-size: 1.5rem;
         cursor: pointer;
     }
     
-    /* أنماط لوحة التحكم */
-    .control-panel {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
+    .song-info {
         display: flex;
-        flex-direction: column;
-        gap: 10px;
-        z-index: 1002;
+        gap: 15px;
+        align-items: center;
     }
     
-    .panel-btn {
-        width: 40px;
-        height: 40px;
+    #music-cover {
+        width: 60px;
+        height: 60px;
+        border-radius: 5px;
+    }
+    
+    .progress-container {
+        width: 100%;
+        height: 5px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 5px;
+        margin: 10px 0;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background: var(--primary-color);
+        border-radius: 5px;
+        width: 0%;
+    }
+    
+    .time-display {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.7);
+    }
+    
+    .volume-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    /* الزر العائم */
+    .floating-btn {
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
         background: var(--primary-color);
         color: white;
@@ -536,7 +327,40 @@ function injectStyles() {
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    
+    /* الإشعارات المخصصة */
+    .custom-notification {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 25px;
+        border-radius: 30px;
+        color: white;
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+        from { bottom: -50px; opacity: 0; }
+        to { bottom: 20px; opacity: 1; }
+    }
+    
+    /* إصلاحات التناسق */
+    .card {
+        margin: 15px 0 !important;
+        padding: 20px !important;
+    }
+    
+    .header {
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+    
+    body {
+        line-height: 1.6 !important;
     }
     `;
     
