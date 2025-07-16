@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الملف الشخصي - أحمد</title>
+<title>الملف الشخصي - الإصدار 4.4</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -16,6 +16,7 @@
     --secondary-color: #ff6b4a;
     --edit-color: #2ecc71;
     --welcome-color: #9b59b6;
+    --secret-color: #f39c12;
 }
 
 body {
@@ -64,10 +65,16 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease;
     cursor: pointer;
+    position: relative;
 }
 
 .profile-image:hover {
     transform: scale(1.05);
+}
+
+.profile-image.secret-mode {
+    border-color: var(--secret-color);
+    animation: pulse 1.5s infinite;
 }
 
 .profile-title {
@@ -237,6 +244,7 @@ body {
     --secondary-color: #ff5b3a;
     --edit-color: #27ae60;
     --welcome-color: #8e44ad;
+    --secret-color: #e67e22;
 }
 
 .dark-theme {
@@ -248,6 +256,7 @@ body {
     --secondary-color: #ff6b4a;
     --edit-color: #2ecc71;
     --welcome-color: #9b59b6;
+    --secret-color: #f39c12;
 }
 
 .edit-mode .editable {
@@ -372,9 +381,29 @@ body {
     gap: 5px;
 }
 
+.secret-hint {
+    position: absolute;
+    bottom: -25px;
+    right: 0;
+    font-size: 0.7rem;
+    color: var(--secret-color);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.profile-image-container:hover .secret-hint {
+    opacity: 1;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(243, 156, 18, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); }
 }
 
 @media (max-width: 600px) {
@@ -407,12 +436,14 @@ body {
             <div><i class="fas fa-clock"></i> وقت الزيارة: <span id="visit-time"></span></div>
             <div><i class="fas fa-globe"></i> المتصفح: <span id="browser-info"></span></div>
             <div><i class="fas fa-desktop"></i> نظام التشغيل: <span id="os-info"></span></div>
-            <div><i class="fas fa-network-wired"></i> عنوان IP: <span id="ip-info">جاري التحميل...</span></div>
         </div>
     </div>
 
     <div class="header">
-        <img src="6610925486.png" alt="صورة الملف الشخصي" class="profile-image" id="profile-image">
+        <div class="profile-image-container" style="position:relative">
+            <img src="6610925486.png" alt="صورة الملف الشخصي" class="profile-image" id="profile-image">
+            <div class="secret-hint">(النقر 3 مرات لتفعيل وضع التعديل)</div>
+        </div>
         <div>
             <h1 class="profile-title editable" id="profile-name">أحمد</h1>
             <p class="profile-subtitle editable" id="profile-title">مهندس برمجيات محترف</p>
@@ -530,13 +561,46 @@ body {
 </div>
 
 <script>
-// ========== نظام التحكم بالصلاحيات ==========
-// قم بتعيين عنوان IP الخاص بك هنا
-const ALLOWED_IPS = [
-    "169.224.64.78", // عنوان IP الخاص بك
-    "127.0.0.1", // للوصول المحلي
-    "localhost" // للوصول المحلي
-];
+// ========== نظام التعديل السري ==========
+let clickCount = 0;
+let lastClickTime = 0;
+const PROFILE_IMAGE = document.getElementById('profile-image');
+const EDIT_TOGGLE = document.getElementById('edit-toggle');
+
+PROFILE_IMAGE.addEventListener('click', (e) => {
+    const currentTime = new Date().getTime();
+    
+    // إذا كانت الفترة بين النقرات أقل من 500 مللي ثانية
+    if (currentTime - lastClickTime < 500) {
+        clickCount++;
+    } else {
+        clickCount = 1;
+    }
+    
+    lastClickTime = currentTime;
+    
+    // إذا تم النقر 3 مرات
+    if (clickCount >= 3) {
+        activateEditMode();
+        clickCount = 0;
+    }
+});
+
+function activateEditMode() {
+    // إضافة تأثيرات بصرية
+    PROFILE_IMAGE.classList.add('secret-mode');
+    
+    // إظهار زر التعديل
+    EDIT_TOGGLE.style.display = 'flex';
+    
+    // إشعار للمستخدم
+    showNotification('تم تفعيل وضع التعديل السري!', 'var(--secret-color)');
+    
+    // إزالة التأثير بعد 3 ثواني
+    setTimeout(() => {
+        PROFILE_IMAGE.classList.remove('secret-mode');
+    }, 3000);
+}
 
 // ========== معلومات الزائر ==========
 function getVisitorInfo() {
@@ -579,45 +643,6 @@ function getVisitorInfo() {
             document.getElementById('welcome-banner').style.display = 'none';
         }, 500);
     }, 10000);
-}
-
-// ========== التحقق من IP الزائر ==========
-async function checkIP() {
-    try {
-        // الحصول على IP الزائر من خدمة خارجية
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        const visitorIP = data.ip;
-        
-        // عرض IP الزائر
-        document.getElementById('ip-info').textContent = visitorIP;
-        
-        // التحقق إذا كان IP الزائر مسموحًا به
-        if (ALLOWED_IPS.includes(visitorIP)) {
-            document.getElementById('edit-toggle').style.display = 'flex';
-            
-            // إضافة شارة المدير
-            const adminBadge = document.createElement('div');
-            adminBadge.className = 'admin-badge';
-            adminBadge.innerHTML = '<i class="fas fa-user-shield"></i> وضع المدير';
-            document.querySelector('.header').appendChild(adminBadge);
-            
-            console.log("تم الكشف عن IP مدير - تفعيل وضع التعديل");
-        } else {
-            console.log("زائر عادي - إخفاء خيارات التعديل");
-        }
-        
-    } catch (error) {
-        console.error("خطأ في الحصول على IP:", error);
-        document.getElementById('ip-info').textContent = "غير معروف";
-        
-        // طريقة بديلة للتحقق من الوصول المحلي
-        if (window.location.hostname === "localhost" || 
-            window.location.hostname === "127.0.0.1") {
-            document.getElementById('edit-toggle').style.display = 'flex';
-            console.log("وصول محلي - تفعيل وضع التعديل");
-        }
-    }
 }
 
 // ========== الخلفية المتحركة ==========
@@ -818,7 +843,7 @@ document.querySelectorAll('.editable').forEach(item => {
 });
 
 // إشعارات
-function showNotification(message) {
+function showNotification(message, bgColor = 'var(--edit-color)') {
     const notification = document.createElement('div');
     notification.className = 'card';
     notification.style.position = 'fixed';
@@ -826,7 +851,7 @@ function showNotification(message) {
     notification.style.right = '20px';
     notification.style.zIndex = '1000';
     notification.style.padding = '15px';
-    notification.style.backgroundColor = 'var(--edit-color)';
+    notification.style.backgroundColor = bgColor;
     notification.style.color = 'white';
     notification.style.borderRadius = '10px';
     notification.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
@@ -877,7 +902,6 @@ themeToggle.addEventListener('click', () => {
 // تهيئة الصفحة
 window.onload = function() {
     getVisitorInfo();
-    checkIP();
     animateBackground();
     
     // إضافة تذييل الصفحة
@@ -886,7 +910,7 @@ window.onload = function() {
     footer.style.marginTop = '20px';
     footer.style.color = 'var(--text-color)';
     footer.style.opacity = '0.7';
-    footer.innerHTML = `&copy; ${new Date().getFullYear()} - جميع الحقوق محفوظة - الإصدار 3.3`;
+    footer.innerHTML = `&copy; ${new Date().getFullYear()} - جميع الحقوق محفوظة - الإصدار 4.4`;
     document.querySelector('.container').appendChild(footer);
 };
 </script>
